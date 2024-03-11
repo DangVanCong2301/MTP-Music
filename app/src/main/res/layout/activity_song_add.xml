@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.admin.SongAddActivity"
+    android:background="@color/primaryColor">
+
+    <RelativeLayout
+        android:id="@+id/layout_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_toolbar01">
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow_back"
+            android:background="@color/transparent"
+            android:layout_margin="10dp"
+            android:padding="5dp"/>
+        <ImageView
+            android:id="@+id/img_icon"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/btn_back"
+            android:src="@drawable/media_player_logo"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/img_icon"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-condensed"
+            android:text="Thêm bài hát mới"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:layout_marginTop="10dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_attach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="18dp"
+            android:background="@color/transparent"
+            android:padding="5dp"
+            android:src="@drawable/baseline_audio_file" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scv_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="220dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/img_song"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/baseline_add_a_photo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/title_layout_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                app:hintEnabled="false"
+                android:layout_below="@id/img_song">
+
+                <EditText
+                    android:id="@+id/edt_song_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_edittext01"
+                    android:drawableStart="@drawable/baseline_library_music"
+                    android:drawablePadding="10dp"
+                    android:hint="Tên bài hát"
+                    android:textSize="16sp"
+                    android:inputType="textPersonName|textCapWords"
+                    android:textColorHint="@color/textColor"
+                    android:textColor="@color/firstColor"/>
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/description_layout_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/title_layout_input"
+                app:hintEnabled="false">
+
+                <EditText
+                    android:id="@+id/edt_song_artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_edittext01"
+                    android:drawableStart="@drawable/baseline_library_music"
+                    android:drawablePadding="10dp"
+                    android:textSize="16sp"
+                    android:hint="Tên ca sĩ"
+                    android:inputType="textCapSentences"
+                    android:textColorHint="@color/textColor"
+                    android:textColor="@color/firstColor"/>
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/description_layout_input"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/shape_edittext01"
+                android:drawableStart="@drawable/baseline_category"
+                android:drawableEnd="@drawable/baseline_keyboard_arrow_down"
+                android:hint="Thể loại"
+                android:padding="16dp"
+                android:drawablePadding="10dp"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/titleColor"
+                android:textSize="16sp"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_submit_song"
+                android:layout_width="match_parent"
+                android:textAllCaps="false"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_category"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginTop="20dp"
+                android:text="Tải lên"
+                android:textColor="@color/white"
+                android:background="@drawable/shape_button02"/>
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+
+
+
+
+</RelativeLayout>
