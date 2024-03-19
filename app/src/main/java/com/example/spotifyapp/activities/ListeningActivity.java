@@ -1,8 +1,10 @@
 package com.example.spotifyapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -27,6 +29,12 @@ import com.bumptech.glide.Glide;
 import com.example.spotifyapp.R;
 import com.example.spotifyapp.databinding.ActivityListeningBinding;
 import com.example.spotifyapp.models.Song;
+import com.example.spotifyapp.services.MyService;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 
@@ -42,6 +50,10 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     private Handler handler = new Handler();
     private static final String TAG = "LISTEN_SONG";
     private float zAxis;
+    private long songCount;
+    private int songIndex;
+    private String audioUrl;
+    private boolean isDirty = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +65,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         setVariable();
         startMusic();
         startAnimation();
+        initStartService();
         initListener();
         initSensor();
 
@@ -144,6 +157,15 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                 .setInterpolator(new LinearInterpolator()).start();
     }
 
+    private void initStartService() {
+        Intent intent = new Intent(this, MyService.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("object", object);
+        Log.d(TAG, "initStartService: " + object.getSongName());
+        intent.putExtras(bundle);
+        startService(intent);
+    }
+
     private void stopAnimation() {
         binding.imgSong.animate().cancel();
     }
@@ -211,6 +233,13 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                 prepareMediaPlayer();
             }
         });
+
+        binding.btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playNextSong();
+            }
+        });
     }
     private void initSensor() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -272,7 +301,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         zAxis = sensorEvent.values[2];
         binding.tvGravity.setText(sensorEvent.values[2] + "m/s2");
 
-        //changePlayOrPause(zAxis);
+        // changePlayOrPause(zAxis);
     }
 
     @Override
@@ -292,6 +321,95 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         } else {
             mediaPlayer.start();
             binding.btnPlayPause.setImageResource(R.drawable.baseline_pause_circle_outline);
+            updateSeekbar();
+        }
+    }
+
+    private void playNextSong() {
+        DatabaseReference ref = database.getReference("Songs");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                songCount = (int) snapshot.getChildrenCount();
+                Log.d(TAG, "onDataChange: " + songCount);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        if (songIndex < songCount - 1) {
+            int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
+            songIndex = nextSongIndex;
+            changeSong(nextSongIndex);
+        }
+    }
+
+    private void changeSong(int next) {
+        // Dừng bài hát hiện tại nếu đang chạy
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+            }
+            mediaPlayer.release(); // Giải phóng tài nguyên
+            mediaPlayer = null;
+        }
+
+        // Khởi tạo Media Player
+        mediaPlayer = new MediaPlayer();
+
+        DatabaseReference ref = database.getReference("Songs");
+        Query query = ref.orderByChild("index").equalTo(next);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Lấy kết quả truy vấn
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        String songName = ds.child("songName").getValue(String.class);
+                        String songArtist = ds.child("songArtist").getValue(String.class);
+                        String imgUrl = ds.child("imageUrl").getValue(String.class);
+                        String url = ds.child("url").getValue(String.class);
+
+                        audioUrl = url;
+
+                        binding.tvSongName.setText(songName);
+                        binding.tvSongArtist.setText(songArtist);
+
+                        Glide.with(ListeningActivity.this)
+                                        .load(imgUrl)
+                                                .into(binding.imgSong);
+
+                        Log.d(TAG, "songName: " + songName);
+
+                        try {
+                            mediaPlayer.setDataSource(url);
+                            mediaPlayer.prepare();
+                            binding.tvTotalDuration.setText(milliSecondsToTimer(mediaPlayer.getDuration()));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        Log.d(TAG, "changeSong: " + audioUrl);
+        // Tiếp tục
+        resumeMusic();
+        binding.btnPlayPause.setImageResource(R.drawable.baseline_play_circle_outline);
+        isDirty = false;
+    }
+
+    private void resumeMusic() {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
             updateSeekbar();
         }
     }

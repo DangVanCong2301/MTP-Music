@@ -14,11 +14,12 @@ public class Song implements Serializable {
     private boolean isBest;
     private int listensCount;
     private int downloadCount;
+    private int index;
 
     public Song() {
     }
 
-    public Song(String id, String songName, String songArtist, String uid, long timestamp, String url, String categoryId, String imageUrl, boolean isBest, int listensCount, int downloadCount) {
+    public Song(String id, String songName, String songArtist, String uid, long timestamp, String url, String categoryId, String imageUrl, boolean isBest, int listensCount, int downloadCount, int index) {
         this.id = id;
         this.songName = songName;
         this.songArtist = songArtist;
@@ -30,6 +31,7 @@ public class Song implements Serializable {
         this.isBest = isBest;
         this.listensCount = listensCount;
         this.downloadCount = downloadCount;
+        this.index = index;
     }
 
     public String getId() {
@@ -118,5 +120,13 @@ public class Song implements Serializable {
 
     public void setDownloadCount(int downloadCount) {
         this.downloadCount = downloadCount;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

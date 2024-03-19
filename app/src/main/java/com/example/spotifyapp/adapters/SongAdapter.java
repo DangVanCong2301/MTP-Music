@@ -1,6 +1,7 @@
 package com.example.spotifyapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.spotifyapp.activities.ListeningActivity;
 import com.example.spotifyapp.databinding.ItemListSongBinding;
 import com.example.spotifyapp.models.Song;
 
@@ -49,6 +51,15 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                 .load(songImage)
                 .transform(new CenterCrop(), new RoundedCorners(10))
                 .into(holder.binding.imgSong);
+
+        holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ListeningActivity.class);
+                intent.putExtra("object", items.get(position));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

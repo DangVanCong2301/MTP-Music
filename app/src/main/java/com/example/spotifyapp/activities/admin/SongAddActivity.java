@@ -285,12 +285,6 @@ public class SongAddActivity extends BaseActivity {
         hashMap.put("isBest", true);
         hashMap.put("listensCount", 0);
         hashMap.put("downloadsCount", 0);
-        Log.d(TAG, "uid: " + uid);
-        Log.d(TAG, "id: " + timestamp);
-        Log.d(TAG, "songName:" + songName);
-        Log.d(TAG, "songArtist: " + songArtist);
-        Log.d(TAG, "categoryId: " + selectedCategoryId);
-        Log.d(TAG, "url: ");
 
         // Dữ liệu -> Songs
         DatabaseReference ref = database.getReference("Songs");
