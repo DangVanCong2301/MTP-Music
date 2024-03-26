@@ -240,7 +240,7 @@
             android:src="@drawable/baseline_playlist_add_check"
             android:layout_gravity="center"/>
         <TextView
-            android:id="@+id/tv_gravity"
+            android:id="@+id/tv_accelerometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

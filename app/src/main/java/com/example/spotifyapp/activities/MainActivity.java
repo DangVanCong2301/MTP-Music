@@ -1,10 +1,17 @@
 package com.example.spotifyapp.activities;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.example.spotifyapp.BaseActivity;
 import com.example.spotifyapp.R;
 import com.example.spotifyapp.adapters.ViewPagerAdapter;
@@ -16,7 +23,20 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     ActivityMainBinding binding;
-    List<Song> list;
+    private Song mSong;
+    private static final String TAG = "MAIN_ACTIVITY";
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle == null) {
+                return;
+            }
+            mSong = (Song) bundle.get("object");
+
+            handleLayoutMusic();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +44,7 @@ public class MainActivity extends BaseActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //list = getListBannerSong();
-        Log.d("List", "onCreate: " + list);
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("send_data_to_activity"));
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         binding.viewPager2.setAdapter(viewPagerAdapter);
@@ -81,5 +100,27 @@ public class MainActivity extends BaseActivity {
             return true;
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+    }
+
+    private void handleLayoutMusic() {
+        binding.layoutBottom.setVisibility(View.VISIBLE);
+        showInfoSong();
+    }
+
+    private void showInfoSong() {
+        if (mSong == null) {
+            return;
+        }
+        Glide.with(this)
+                .load(mSong.getImageUrl())
+                .into(binding.imgSongCustom);
+        binding.tvTitleSong.setText(mSong.getSongName());
+        binding.tvSingleSong.setText(mSong.getSongArtist());
     }
 }
