@@ -53,4 +53,6 @@ dependencies {
     implementation ("me.relex:circleindicator:2.1.6")
     // Glide
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    // Media Styles
+    implementation("androidx.media:media:1.7.0")
 }

@@ -4,6 +4,7 @@
     <!--transparent fill color-->
     <solid android:color="@color/secondColor"/>
 <!--    shape color-->
-    <corners android:radius="2dp"/>
+    <stroke android:color="@color/textColor"
+        android:width="1dp"/>
 
 </shape>

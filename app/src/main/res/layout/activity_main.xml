@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="MainActivity"
+    tools:context=".activities.MainActivity"
     android:background="@color/primaryColor">
 
     <TextView
@@ -22,7 +22,79 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tv_title"
-        android:layout_above="@id/bottom_navigation"/>
+        android:layout_above="@id/layout_bottom"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:background="@drawable/shape_button03"
+        android:layout_above="@id/bottom_navigation">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img_song_custom"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/media_player_logo"
+            android:layout_centerVertical="true"
+            app:shapeAppearanceOverlay="@style/roundedImageRounded"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/img_song_custom"
+            android:layout_toStartOf="@id/img_favorite">
+
+            <TextView
+                android:id="@+id/tv_title_song"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back To December"
+                android:textColor="@color/titleColor"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tv_single_song"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taylor Swift"
+                android:textSize="12sp"
+                android:textColor="@color/textColor"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="30dp"
+            android:layout_toStartOf="@id/img_play_or_pause"
+            android:src="@drawable/baseline_favorite_border"/>
+
+        <ImageView
+            android:id="@+id/img_play_or_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="30dp"
+            android:layout_toStartOf="@id/img_clear"
+            android:src="@drawable/baseline_pause_circle_outline"/>
+
+        <ImageView
+            android:id="@+id/img_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/baseline_skip_next"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
