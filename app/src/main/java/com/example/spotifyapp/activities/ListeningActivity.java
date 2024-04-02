@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -55,6 +56,23 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     private int songIndex;
     private String audioUrl;
     private boolean isDirty = false;
+    private boolean isPlaying;
+    public static final int ACTION_PAUSE = 1;
+    public static final int ACTION_RESUME = 2;
+    public static final int ACTION_CLEAR = 3;
+    public static final int ACTION_START = 4;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle == null) {
+                return;
+            }
+            isPlaying = bundle.getBoolean("status_player");
+            int actionMusic = bundle.getInt("action_music");
+            handleLayoutMusic(actionMusic);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +84,12 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         setVariable();
         startMusic();
         startAnimation();
-        initStartService();
         initListener();
         initSensor();
+
+    }
+
+    private void handleLayoutMusic(int action) {
 
     }
 
@@ -143,6 +164,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
     private void startMusic() {
         mediaPlayer.start();
+        initStartService();
         updateSeekbar();
     }
 
