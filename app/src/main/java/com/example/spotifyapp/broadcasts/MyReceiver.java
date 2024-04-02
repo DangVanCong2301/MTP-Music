@@ -16,6 +16,6 @@ public class MyReceiver extends BroadcastReceiver {
         intentService.putExtra("action_music_service", actionMusic);
         intentService.putExtra("status_player_service", statusMusic);
 
-        context.startService(intentService); // Phải gửi là intentService
+        context.startService(intentService);
     }
 }
