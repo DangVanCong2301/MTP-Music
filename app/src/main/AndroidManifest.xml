@@ -69,6 +69,7 @@
         </activity>
 
         <service android:name=".services.MyService" />
+        <receiver android:name=".broadcasts.MyReceiver"/>
     </application>
 
 </manifest>
