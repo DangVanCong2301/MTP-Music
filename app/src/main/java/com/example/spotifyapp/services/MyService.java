@@ -26,6 +26,7 @@ import com.example.spotifyapp.models.Song;
 
 public class MyService extends Service {
     private Song mSong;
+    private boolean isPlaying;
     @Override
     public void onCreate() {
         super.onCreate();
