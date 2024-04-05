@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -17,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SpotifyApp"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.SplashActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.AccelerationSensorActivity"
             android:exported="false" />
@@ -50,16 +52,13 @@
             android:name=".BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.admin.DashboardAdminActivity"
             android:exported="false" />
         <activity
             android:name=".activities.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SplashActivity"
+            android:name=".activities.NavigationActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,7 +68,8 @@
         </activity>
 
         <service android:name=".services.MyService" />
-        <receiver android:name=".broadcasts.MyReceiver"/>
+
+        <receiver android:name=".broadcasts.MyReceiver" />
     </application>
 
 </manifest>
