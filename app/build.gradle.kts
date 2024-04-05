@@ -55,4 +55,6 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     // Media Styles
     implementation("androidx.media:media:1.7.0")
+    // Circle ImageView
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 }
