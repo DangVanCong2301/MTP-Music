@@ -95,6 +95,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
     private void getIntentExtra() {
         object = (Song) getIntent().getSerializableExtra("object");
+        songIndex = object.getIndex();
         Log.d(TAG, "object: " + object.getUrl());
     }
 
@@ -239,21 +240,12 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
             }
         });
 
+        mediaPlayerCompletionListener();
+
         mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
                 binding.sbSong.setSecondaryProgress(i);
-            }
-        });
-
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                binding.sbSong.setProgress(0);
-                binding.btnPlayPause.setImageResource(R.drawable.baseline_play_circle_outline);
-                binding.tvCurrentTime.setText(R.string.zero);
-                mediaPlayer.reset();
-                prepareMediaPlayer();
             }
         });
 
@@ -264,6 +256,23 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
             }
         });
     }
+
+    // Khi bài hát kết thúc -> chuẩn bị bài hát mới
+    private void mediaPlayerCompletionListener() {
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                binding.sbSong.setProgress(0);
+                binding.btnPlayPause.setImageResource(R.drawable.baseline_play_circle_outline);
+                binding.tvCurrentTime.setText(R.string.zero);
+                mediaPlayer.reset();
+                prepareMediaPlayer();
+                stopAnimation();
+                playNextSong(); // Khi hoàn thành xong bài hát thí sẽ chuyển đến bài hát tiếp theo
+            }
+        });
+    }
+
     private void initSensor() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -296,8 +305,18 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: mediaPlayer is destroying...");
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
     private void showSensorAttackMenu() {
-        // Khởi tạo/đặt popup enu
+        // Khởi tạo/đặt popup menu
         PopupMenu popupMenu = new PopupMenu(this, binding.btnSensor);
         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Cảm biến dừng");
         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Cảm biến chuyển bài");
@@ -321,8 +340,11 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        // Làm tròn lên hai số thập phân, nhân và chia cho 100
+        //nguồn: https://viettuts.vn/java-math/lam-tron-trong-java
         zAxis = sensorEvent.values[2];
-        binding.tvGravity.setText(sensorEvent.values[2] + "m/s2");
+        float number = (float) Math.round(zAxis * 100) / 100;
+        binding.tvGravity.setText(number + "");
 
         // changePlayOrPause(zAxis);
     }
@@ -353,8 +375,18 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                songCount = (int) snapshot.getChildrenCount();
-                Log.d(TAG, "onDataChange: " + songCount);
+                if (snapshot.exists()) {
+                    songCount = (int) snapshot.getChildrenCount();
+                    // Lấy giá trị index của bài hát đang nghe
+                    Log.d(TAG, "songIndex: " + songIndex);
+                    Log.d(TAG, "songCount: " + songCount);
+                    if (songIndex < songCount - 1) {
+                        int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
+                        songIndex = nextSongIndex;
+                        Log.d(TAG, "songIndex: " + songIndex);
+                        changeSong(nextSongIndex);
+                    }
+                }
             }
 
             @Override
@@ -362,11 +394,6 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
             }
         });
-        if (songIndex < songCount - 1) {
-            int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
-            songIndex = nextSongIndex;
-            changeSong(nextSongIndex);
-        }
     }
 
     private void changeSong(int next) {
@@ -414,6 +441,9 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
+                        Log.d(TAG, "changeSong: " + audioUrl);
+                        // Tiếp tục phát bài hát tiếp theo
+                        resumeMusic();
                     }
                 }
             }
@@ -423,17 +453,17 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
             }
         });
-        Log.d(TAG, "changeSong: " + audioUrl);
-        // Tiếp tục
-        resumeMusic();
-        binding.btnPlayPause.setImageResource(R.drawable.baseline_play_circle_outline);
-        isDirty = false;
     }
 
     private void resumeMusic() {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
+            binding.btnPlayPause.setImageResource(R.drawable.baseline_pause_circle_outline);
             updateSeekbar();
+            startAnimation();
         }
+        // Khởi tạo mediaPlayer mới ta phải reset lại
+        // sau khi hoàn thành bài hát (tạo thành 1 vòng lặp để chuyển bài)
+        mediaPlayerCompletionListener();
     }
 }
