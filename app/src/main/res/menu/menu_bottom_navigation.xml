@@ -2,21 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/nav_home"
         android:icon="@drawable/baseline_home"
-        android:title="Trang chủ"/>
+        android:title="@string/nav_home"/>
 
     <item android:id="@+id/nav_discover"
-        android:icon="@drawable/baseline_control_point"
-        android:title="Khám phá"/>
+        android:icon="@drawable/baseline_library_music"
+        android:title="@string/nav_discover"/>
 
     <item android:id="@+id/nav_library"
-        android:icon="@drawable/baseline_library_music"
-        android:title="Thư viện"/>
+        android:icon="@drawable/baseline_favorite_border"
+        android:title="@string/nav_favorite"/>
 
     <item android:id="@+id/nav_favorite"
-        android:icon="@drawable/baseline_favorite_border"
-        android:title="Yêu thích"/>
+        android:icon="@drawable/baseline_chat_bubble_outline"
+        android:title="@string/nav_chat"/>
 
     <item android:id="@+id/nav_persion"
         android:icon="@drawable/baseline_person"
-        android:title="Cá nhân"/>
+        android:title="@string/nav_account"/>
 </menu>

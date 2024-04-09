@@ -11,13 +11,13 @@
         android:id="@+id/img_avatar"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/media_player_logo"/>
+        android:src="@drawable/anh_dai_dien"/>
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:text="Van Cong"
+        android:text="@string/tv_account_name"
         android:textStyle="bold"
         android:textColor="@color/titleColor"
         android:layout_marginTop="8dp"/>
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:text="dangvancong2301@gmail.com"
+        android:text="@string/tv_email"
         android:textColor="@color/textColor" />
 
 

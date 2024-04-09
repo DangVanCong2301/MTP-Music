@@ -1,5 +1,8 @@
 package com.example.spotifyapp.activities;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.view.GravityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -9,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -17,13 +21,20 @@ import com.example.spotifyapp.R;
 import com.example.spotifyapp.adapters.ViewPagerAdapter;
 import com.example.spotifyapp.databinding.ActivityMainBinding;
 import com.example.spotifyapp.models.Song;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActivityMainBinding binding;
     private Song mSong;
+    private static final int FRAGMENT_HOME = 0;
+    private static final int FRAGMENT_DISCOVER = 1;
+    private static final int FRAGMENT_FAVORITE = 2;
+    private static final int FRAGMENT_CHAT = 3;
+    private static final int FRAGMENT_ACCOUNT = 4;
+    private int mCurrentPage = FRAGMENT_HOME;
     private static final String TAG = "MAIN_ACTIVITY";
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -44,8 +55,32 @@ public class MainActivity extends BaseActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("send_data_to_activity"));
+        initBroadcastReceiver();
+        initViewPager2();
+        initActionBar();
+        initNavigation();
+        initBottomNavigation();
 
+
+    }
+
+    private void initBroadcastReceiver() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("send_data_to_activity"));
+    }
+
+    private void initActionBar() {
+        setSupportActionBar(binding.toolBar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void initNavigation() {
+        binding.navigationView.setNavigationItemSelectedListener(this);
+        binding.navigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
+    }
+
+    private void initViewPager2() {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         binding.viewPager2.setAdapter(viewPagerAdapter);
         binding.viewPager2.setUserInputEnabled(false);
@@ -56,50 +91,52 @@ public class MainActivity extends BaseActivity {
             public void onPageSelected(int position) {
                 switch (position) {
                     case 0:
+                        mCurrentPage = FRAGMENT_HOME;
+                        binding.navigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
                         binding.bottomNavigation.getMenu().findItem(R.id.nav_home).setChecked(true);
-                        binding.tvTitle.setText("Trang chủ");
                         break;
                     case 1:
+                        mCurrentPage = FRAGMENT_DISCOVER;
+                        binding.navigationView.getMenu().findItem(R.id.navigation_discover).setChecked(true);
                         binding.bottomNavigation.getMenu().findItem(R.id.nav_discover).setChecked(true);
-                        binding.tvTitle.setText("Khám phá");
                         break;
                     case 2:
+                        mCurrentPage = FRAGMENT_FAVORITE;
+                        binding.navigationView.getMenu().findItem(R.id.navigation_favorite).setChecked(true);
                         binding.bottomNavigation.getMenu().findItem(R.id.nav_library).setChecked(true);
-                        binding.tvTitle.setText("Thư viện");
                         break;
                     case 3:
+                        mCurrentPage = FRAGMENT_CHAT;
+                        binding.navigationView.getMenu().findItem(R.id.navigation_chat).setChecked(true);
                         binding.bottomNavigation.getMenu().findItem(R.id.nav_favorite).setChecked(true);
-                        binding.tvTitle.setText("Yêu thích");
                         break;
                     case 4:
+                        mCurrentPage = FRAGMENT_ACCOUNT;
+                        binding.navigationView.getMenu().findItem(R.id.navigation_account).setChecked(true);
                         binding.bottomNavigation.getMenu().findItem(R.id.nav_persion).setChecked(true);
-                        binding.tvTitle.setText("Cá nhân");
                         break;
                 }
             }
         });
+    }
 
+    private void initBottomNavigation() {
+        binding.bottomNavigation.getMenu().findItem(R.id.nav_home).setChecked(true);
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
                 binding.viewPager2.setCurrentItem(0);
-                binding.tvTitle.setText("Trang chủ");
             } else if (id == R.id.nav_discover) {
                 binding.viewPager2.setCurrentItem(1);
-                binding.tvTitle.setText("Khám phá");
             } else if (id == R.id.nav_library) {
                 binding.viewPager2.setCurrentItem(2);
-                binding.tvTitle.setText("Thư viện");
             } else if (id == R.id.nav_favorite) {
                 binding.viewPager2.setCurrentItem(3);
-                binding.tvTitle.setText("Yêu thích");
             } else if (id == R.id.nav_persion) {
                 binding.viewPager2.setCurrentItem(4);
-                binding.tvTitle.setText("Cá nhân");
             }
             return true;
         });
-
     }
 
     @Override
@@ -122,5 +159,71 @@ public class MainActivity extends BaseActivity {
                 .into(binding.imgSongCustom);
         binding.tvTitleSong.setText(mSong.getSongName());
         binding.tvSingleSong.setText(mSong.getSongArtist());
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.navigation_home) {
+            openHomeFragment();
+        } else if (id == R.id.navigation_discover) {
+            openDiscoverFragment();
+        } else if (id == R.id.navigation_favorite) {
+            openFavoriteFragment();
+        } else if (id == R.id.navigation_chat) {
+            openChatFragment();
+        } else if (id == R.id.navigation_account) {
+            openAccountFragment();
+        }
+        return true;
+    }
+
+    private void openHomeFragment() {
+        if (mCurrentPage != FRAGMENT_HOME) {
+            binding.viewPager2.setCurrentItem(0);
+            mCurrentPage = FRAGMENT_HOME;
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private void openDiscoverFragment() {
+        if (mCurrentPage != FRAGMENT_DISCOVER) {
+            binding.viewPager2.setCurrentItem(1);
+            mCurrentPage = FRAGMENT_DISCOVER;
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private void openFavoriteFragment() {
+        if (mCurrentPage != FRAGMENT_FAVORITE) {
+            binding.viewPager2.setCurrentItem(2);
+            mCurrentPage = FRAGMENT_FAVORITE;
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private void openChatFragment() {
+        if (mCurrentPage != FRAGMENT_CHAT) {
+            binding.viewPager2.setCurrentItem(3);
+            mCurrentPage = FRAGMENT_CHAT;
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private void openAccountFragment() {
+        if (mCurrentPage != FRAGMENT_ACCOUNT) {
+            binding.viewPager2.setCurrentItem(4);
+            mCurrentPage = FRAGMENT_ACCOUNT;
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
