@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/primaryColor">
+    <RelativeLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Bình luận"
+            android:textColor="@color/titleColor"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_close"
+            android:background="@color/transparent"
+            android:layout_margin="10dp"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/textColor"
+        android:layout_below="@id/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/layout_header"
+        android:layout_above="@id/layout_bottom">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_comment"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/textColor"
+        android:layout_above="@id/layout_bottom"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="8dp">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img_avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/anh_dai_dien"
+            app:strokeWidth="1dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/roundedImageRounded"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nhập bình luận..."
+            android:textColorHint="@color/textColor"
+            android:textColor="@color/firstColor"
+            android:background="@drawable/shape_edittext01"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toEndOf="@id/img_avatar"
+            android:layout_toStartOf="@id/btn_comment"
+            android:layout_centerVertical="true"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_button01"
+            android:text="Thêm"
+            android:textColor="@color/titleColor"
+            android:textAllCaps="false"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

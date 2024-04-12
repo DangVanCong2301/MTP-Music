@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.spotifyapp.R;
 import com.example.spotifyapp.databinding.ActivityListeningBinding;
+import com.example.spotifyapp.fragments.BottomSheetFragment;
 import com.example.spotifyapp.models.Song;
 import com.example.spotifyapp.services.MyService;
 import com.google.firebase.database.DataSnapshot;
@@ -255,6 +256,18 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                 playNextSong();
             }
         });
+
+        binding.btnComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickOpenBottomSheetFragment();
+            }
+        });
+    }
+
+    private void clickOpenBottomSheetFragment() {
+        BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+        bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
     }
 
     // Khi bài hát kết thúc -> chuẩn bị bài hát mới
