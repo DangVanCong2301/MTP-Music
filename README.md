@@ -10,8 +10,9 @@
 - ...
 ## Kết quả thực hiện (màn hình một số chức năng)
 ### Màn hình giới thiệu ứng dụng
-![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/94a7ec58-f9e4-4b68-aea6-554db0a57a37)
-![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/dc04a885-bb42-44d0-8159-debb8fd4e733)
+![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/be97ca20-b091-4679-8ada-bde4a523ce26)
+
+
 
 
 
