@@ -18,6 +18,12 @@
 ![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/25ad61ed-4052-4fc8-8dec-573d03243ac4)
 ### Màn hình nghe nhạc
 ![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/5c4327be-a027-4bfd-9710-99ecee92d989)
+### Service và Push Notification
+![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/69cc206d-f4e3-4355-a7f4-7c019ae907ba)
+![image](https://github.com/DangVanCong2301/Media_Player_App/assets/111124018/1dad59c0-4f61-4d41-8f28-5acdba842e89)
+
+
+
 
 
 
