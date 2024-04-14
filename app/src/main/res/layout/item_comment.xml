@@ -41,6 +41,7 @@
             android:textSize="12sp"/>
 
         <TextView
+            android:id="@+id/tv_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/img_profile_comment"

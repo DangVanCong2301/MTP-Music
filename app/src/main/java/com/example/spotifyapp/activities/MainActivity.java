@@ -146,6 +146,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void handleLayoutMusic() {
+        Log.d("cong", "handleLayoutMusic: " + mSong.getSongName());
         binding.layoutBottom.setVisibility(View.VISIBLE);
         showInfoSong();
     }
