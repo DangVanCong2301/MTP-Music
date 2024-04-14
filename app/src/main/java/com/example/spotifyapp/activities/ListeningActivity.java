@@ -58,6 +58,8 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     private String audioUrl;
     private boolean isDirty = false;
     private boolean isPlaying;
+    private String songId = "";
+    private String uid = "";
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_RESUME = 2;
     public static final int ACTION_CLEAR = 3;
@@ -82,6 +84,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         setContentView(binding.getRoot());
 
         getIntentExtra();
+        initFirebaseAuth();
         setVariable();
         startMusic();
         startAnimation();
@@ -98,6 +101,10 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         object = (Song) getIntent().getSerializableExtra("object");
         songIndex = object.getIndex();
         Log.d(TAG, "object: " + object.getUrl());
+    }
+
+    private void initFirebaseAuth() {
+        Log.d("cong", "initFirebaseAuth: " + mAuth.getUid());
     }
 
     private void setVariable() {
@@ -266,8 +273,18 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     }
 
     private void clickOpenBottomSheetFragment() {
+        songId = object.getId();
+        uid = mAuth.getUid();
         BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
         bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+    }
+
+    public String getSongId() {
+        return songId;
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     // Khi bài hát kết thúc -> chuẩn bị bài hát mới
