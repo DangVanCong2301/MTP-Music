@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.spotifyapp.databinding.ItemCategoryDiscoverBinding;
 import com.example.spotifyapp.models.Category;
 
@@ -39,7 +40,11 @@ public class DiscoverCategoryAdapter extends RecyclerView.Adapter<DiscoverCatego
         String categoryName = category.getCategoryName();
         String id = category.getId();
         String imageUrl = category.getImageUrl();
-        
+
+        holder.binding.tvCategoryName.setText(categoryName);
+        Glide.with(context)
+                .load(imageUrl)
+                .into(holder.binding.imgCategory);
     }
 
     @Override

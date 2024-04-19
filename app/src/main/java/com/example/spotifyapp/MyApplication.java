@@ -4,6 +4,11 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.text.format.DateFormat;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class MyApplication extends Application {
     public static final String CHANNEL_ID = "channel_service";
@@ -11,7 +16,6 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         createChannelNotification();
     }
 
@@ -28,5 +32,13 @@ public class MyApplication extends Application {
                 manager.createNotificationChannel(channel);
             }
         }
+    }
+
+    public static final String formatTimestamp(long timestamp) {
+        Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+        calendar.setTimeInMillis(timestamp);
+        // Định dạng ngày, thángm, năm
+        String date = DateFormat.format("dd/MM/yyyy", calendar).toString();
+        return date;
     }
 }
