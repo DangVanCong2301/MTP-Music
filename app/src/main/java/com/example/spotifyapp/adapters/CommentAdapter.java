@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.spotifyapp.MyApplication;
 import com.example.spotifyapp.databinding.ItemCommentBinding;
 import com.example.spotifyapp.models.Comment;
 
@@ -38,7 +39,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             return;
         }
         String comment = commentModel.getComment();
+        String timestamp = commentModel.getTimestamp();
+
+        String date = MyApplication.formatTimestamp(Long.parseLong(timestamp));
+
         holder.binding.tvComment.setText(comment);
+        holder.binding.tvDateComment.setText(date);
     }
 
     @Override

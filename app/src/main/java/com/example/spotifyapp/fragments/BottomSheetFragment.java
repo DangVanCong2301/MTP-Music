@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,9 +46,11 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     private CommentAdapter commentAdapter;
     private ListeningActivity mListeningActivity;
     private Button btnComment;
+    private ImageButton btnCloseBottomSheet;
     private EditText edtComment;
     private RecyclerView rcvComment;
     private ProgressDialog progressDialog;
+    private ProgressBar progressBarBottomSheet;
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -66,8 +70,10 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
     private void initUI(View view) {
         btnComment = view.findViewById(R.id.btn_comment_bottom);
+        btnCloseBottomSheet = view.findViewById(R.id.btn_close_bottom_sheet);
         edtComment = view.findViewById(R.id.edt_comment);
         rcvComment = view.findViewById(R.id.rcv_comment);
+        progressBarBottomSheet = view.findViewById(R.id.prg_bottom_sheet);
     }
 
     private void initProgressDialog() {
@@ -85,6 +91,17 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                 } else {
                     addCommentSong();
                 }
+            }
+        });
+
+        btnCloseBottomSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("send_action_close");
+                Bundle bundle = new Bundle();
+                bundle.putInt("close", 1);
+                intent.putExtras(bundle);
+                LocalBroadcastManager.getInstance(mListeningActivity).sendBroadcast(intent);
             }
         });
     }
@@ -141,6 +158,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
     private void loadComments() {
         commentArrayList = new ArrayList<>();
+        progressBarBottomSheet.setVisibility(View.VISIBLE);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Songs");
         ref.child(mListeningActivity.getSongId())
@@ -157,6 +175,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                             }
                             commentAdapter = new CommentAdapter(mListeningActivity, commentArrayList);
                             rcvComment.setAdapter(commentAdapter);
+                            progressBarBottomSheet.setVisibility(View.GONE);
                         }
                     }
 

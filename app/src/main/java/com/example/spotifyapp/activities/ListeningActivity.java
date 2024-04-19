@@ -7,6 +7,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -77,6 +78,18 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         }
     };
 
+    private BroadcastReceiver broadcastReceiverCloseBottomSheet = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        Bundle bundle = intent.getExtras();
+        if (bundle == null) {
+            return;
+        }
+        int actionClose = bundle.getInt("close");
+        handleCloseBottomSheet(actionClose);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +97,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         setContentView(binding.getRoot());
 
         getIntentExtra();
+        iniBroadcastReceiver();
         initFirebaseAuth();
         setVariable();
         startMusic();
@@ -97,10 +111,22 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
     }
 
+    private void handleCloseBottomSheet(int actionClose) {
+        Log.d("cong", "handleCloseBottomSheet: " + actionClose);
+        if (actionClose == 1) {
+
+        }
+    }
+
     private void getIntentExtra() {
         object = (Song) getIntent().getSerializableExtra("object");
         songIndex = object.getIndex();
         Log.d(TAG, "object: " + object.getUrl());
+    }
+
+    private void iniBroadcastReceiver() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("send_data_to_activity"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverCloseBottomSheet, new IntentFilter("send_action_close"));
     }
 
     private void initFirebaseAuth() {
@@ -343,6 +369,8 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverCloseBottomSheet);
     }
 
     private void showSensorAttackMenu() {
@@ -410,7 +438,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                     // Lấy giá trị index của bài hát đang nghe
                     Log.d(TAG, "songIndex: " + songIndex);
                     Log.d(TAG, "songCount: " + songCount);
-                    if (songIndex < songCount - 1) {
+                    if (songIndex < songCount + 1) {
                         int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
                         songIndex = nextSongIndex;
                         Log.d(TAG, "songIndex: " + songIndex);

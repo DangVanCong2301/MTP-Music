@@ -32,6 +32,7 @@
             android:layout_toEndOf="@id/img_profile_comment"/>
 
         <TextView
+            android:id="@+id/tv_date_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
