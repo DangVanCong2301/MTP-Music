@@ -106,6 +106,7 @@
                 android:layout_gravity="center"/>
         </LinearLayout>
         <ImageButton
+            android:id="@+id/btnFavourite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"

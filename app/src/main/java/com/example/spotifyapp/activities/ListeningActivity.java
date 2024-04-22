@@ -41,6 +41,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ListeningActivity extends BaseActivity implements SensorEventListener {
 
@@ -81,12 +82,12 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     private BroadcastReceiver broadcastReceiverCloseBottomSheet = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        Bundle bundle = intent.getExtras();
-        if (bundle == null) {
-            return;
-        }
-        int actionClose = bundle.getInt("close");
-        handleCloseBottomSheet(actionClose);
+            Bundle bundle = intent.getExtras();
+            if (bundle == null) {
+                return;
+            }
+            int actionClose = bundle.getInt("close");
+            handleCloseBottomSheet(actionClose);
         }
     };
 
@@ -104,7 +105,19 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
         startAnimation();
         initListener();
         initSensor();
+        handleFavouriteBtn();
+    }
 
+    private void handleFavouriteBtn() {
+        binding.btnFavourite.setOnClickListener((view)->{
+            database.getReference()
+                    .child("FavouriteSong")
+                    .child(Objects.requireNonNull(mAuth.getUid()))
+                    .child("Songs").child(songId)
+                    .setValue(object).addOnSuccessListener(command -> {
+                        binding.btnFavourite.setColorFilter(Color.parseColor("#FF0000"));
+                    });
+        });
     }
 
     private void handleLayoutMusic(int action) {
@@ -192,7 +205,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
     private void updateSeekbar() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            binding.sbSong.setProgress((int)(((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));
+            binding.sbSong.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));
             handler.postDelayed(updater, 1000);
         }
     }

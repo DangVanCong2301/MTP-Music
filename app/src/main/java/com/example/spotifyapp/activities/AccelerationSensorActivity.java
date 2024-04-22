@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -36,6 +37,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class AccelerationSensorActivity extends BaseActivity implements SensorEventListener {
     private ActivityAccelerationSensorBinding binding;
@@ -60,19 +62,79 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
         super.onCreate(savedInstanceState);
         binding = ActivityAccelerationSensorBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         getIntentExtra();
         setVariable();
         startMusic();
         startAnimation();
         initListener();
         initSensor();
-
+        handleFavouriteBtn();
     }
+
+    private void handleFavouriteBtn() {
+    binding.btnFavourite.setOnClickListener((view) -> {
+        database.getReference()
+                .child("FavouriteSong")
+                .child(Objects.requireNonNull(mAuth.getUid()))
+                .child("Songs").child(object.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    removeFavouriteSong();
+                } else {
+                    addFavouriteSong();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Firebase", "Error checking song existence: " + error.getMessage());
+            }
+        });
+    });
+}
+
+private void removeFavouriteSong() {
+    database.getReference()
+            .child("FavouriteSong")
+            .child(Objects.requireNonNull(mAuth.getUid()))
+            .child("Songs").child(object.getId())
+            .removeValue().addOnSuccessListener(command -> {
+        binding.btnFavourite.setColorFilter(Color.parseColor("#FFFFFF"));
+    });
+}
+
+private void addFavouriteSong() {
+    database.getReference()
+            .child("FavouriteSong")
+            .child(Objects.requireNonNull(mAuth.getUid()))
+            .child("Songs").child(object.getId())
+            .setValue(object).addOnSuccessListener(command -> {
+        binding.btnFavourite.setColorFilter(Color.parseColor("#FF0000"));
+    });
+}
 
     private void getIntentExtra() {
         object = (Song) getIntent().getSerializableExtra("object");
         Log.d(TAG, "object: " + object.getUrl());
+        database.getReference()
+                .child("FavouriteSong")
+                .child(Objects.requireNonNull(mAuth.getUid()))
+                .child("Songs").child(object.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                           binding.btnFavourite.setColorFilter(Color.parseColor("#FF0000"));
+                        } else {
+                            binding.btnFavourite.setColorFilter(Color.parseColor("#FFFFFF"));
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d("Firebase", "Error checking song existence: " + error.getMessage());
+                    }
+                });
+
     }
 
     private void setVariable() {

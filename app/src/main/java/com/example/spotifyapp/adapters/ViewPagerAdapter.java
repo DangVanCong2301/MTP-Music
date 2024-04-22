@@ -25,9 +25,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return new DiscoverFragment();
             case 2:
-                return new LibraryFragment();
-            case 3:
                 return new FavoriteFragment();
+            case 3:
+                return new LibraryFragment();
             case 4:
                 return new PersonFragment();
             default:

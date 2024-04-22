@@ -98,7 +98,7 @@ public class Song implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-    public boolean isBest() {
+    public boolean getIsBest() {
         return isBest;
     }
 
