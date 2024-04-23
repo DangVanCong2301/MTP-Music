@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.example.spotifyapp.models.Song;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -60,8 +62,13 @@ public class FavoriteFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listFavourite.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Song song = dataSnapshot.getValue(Song.class);
-                    listFavourite.add(song);
+                    try{
+                        Song song = dataSnapshot.getValue(Song.class);
+                        listFavourite.add(song);
+                    }catch(DatabaseException e){
+                        Log.e("DB Exception","Cannot Fetch data"+e.getMessage());
+                    }
+
                 }
                 favoriteAdapter.notifyDataSetChanged();
             }
