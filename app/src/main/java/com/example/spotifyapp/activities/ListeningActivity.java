@@ -476,10 +476,11 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                             Log.d(TAG, "isRepeat: " + isRepeat);
                             Log.d(TAG, "songIndex: " + songIndex);
                             changeSong(songIndex);
+                        } else { // Nếu có if else thì trường else cuối phải có
+                            int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
+                            songIndex = nextSongIndex;
+                            changeSong(nextSongIndex);
                         }
-                        int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
-                        songIndex = nextSongIndex;
-                        changeSong(nextSongIndex);
                     }
                     Log.d(TAG, "songIndex: " + songIndex);
                     if (songIndex > songCount) {
