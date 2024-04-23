@@ -41,6 +41,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class ListeningActivity extends BaseActivity implements SensorEventListener {
 
@@ -49,12 +50,13 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     private AudioManager audioManager;
     private Sensor gravitySensor;
     private Boolean isAvailable;
+    private boolean isRepeat, isShuffling = false;
     private Song object;
     private MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
     private static final String TAG = "LISTEN_SONG";
     private float zAxis;
-    private long songCount;
+    private int songCount;
     private int songIndex;
     private String audioUrl;
     private boolean isDirty = false;
@@ -276,6 +278,32 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
         mediaPlayerCompletionListener();
 
+        binding.btnShuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isShuffling) {
+                    isShuffling = false;
+                    binding.btnShuffle.setImageResource(R.drawable.baseline_shuffle);
+                } else {
+                    isShuffling = true;
+                    binding.btnShuffle.setImageResource(R.drawable.baseline_shuffle_on);
+                }
+            }
+        });
+
+        binding.btnRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isRepeat) {
+                    isRepeat = false;
+                    binding.btnRepeat.setImageResource(R.drawable.baseline_repeat);
+                } else {
+                    isRepeat = true;
+                    binding.btnRepeat.setImageResource(R.drawable.baseline_repeat_one);
+                }
+            }
+        });
+
         mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
@@ -438,11 +466,25 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                     // Lấy giá trị index của bài hát đang nghe
                     Log.d(TAG, "songIndex: " + songIndex);
                     Log.d(TAG, "songCount: " + songCount);
-                    if (songIndex < songCount + 1) {
+                    if (songIndex <= songCount) {
+                        if (isShuffling && !isRepeat) {
+                            songIndex = getRandom(songCount);
+                            changeSong(songIndex);
+                        } else if (!isShuffling && isRepeat) {
+                            songIndex = ((songIndex) % songCount);
+                            Log.d(TAG, "isShuffling: " + isShuffling);
+                            Log.d(TAG, "isRepeat: " + isRepeat);
+                            Log.d(TAG, "songIndex: " + songIndex);
+                            changeSong(songIndex);
+                        }
                         int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
                         songIndex = nextSongIndex;
-                        Log.d(TAG, "songIndex: " + songIndex);
                         changeSong(nextSongIndex);
+                    }
+                    Log.d(TAG, "songIndex: " + songIndex);
+                    if (songIndex > songCount) {
+                        songIndex = 1;
+                        changeSong(songIndex);
                     }
                 }
             }
@@ -452,6 +494,12 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
             }
         });
+    }
+
+    private int getRandom(int songCount) {
+        Random random = new Random();
+
+        return random.nextInt(songCount + 1);
     }
 
     private void changeSong(int next) {
