@@ -29,6 +29,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.spotifyapp.MyApplication;
 import com.example.spotifyapp.R;
 import com.example.spotifyapp.databinding.ActivityListeningBinding;
 import com.example.spotifyapp.fragments.BottomSheetFragment;
@@ -63,6 +64,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     private boolean isPlaying;
     private String songId = "";
     private String uid = "";
+    private boolean isInMyFavorite = false;
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_RESUME = 2;
     public static final int ACTION_CLEAR = 3;
@@ -133,6 +135,31 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
 
     private void initFirebaseAuth() {
         Log.d("cong", "initFirebaseAuth: " + mAuth.getUid());
+        if (mAuth.getCurrentUser() != null) {
+            checkIsFavorite();
+        }
+    }
+
+    private void checkIsFavorite() {
+        DatabaseReference ref = database.getReference("Users");
+        // Thực hiện truy vấn đến bảng yêu thích từ bảng người dùng
+        ref.child(mAuth.getUid()).child("Favorites").child(object.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        isInMyFavorite = snapshot.exists();
+                        if (isInMyFavorite) {
+                            binding.btnAddFavorite.setImageResource(R.drawable.baseline_favorite);
+                        } else {
+                            binding.btnAddFavorite.setImageResource(R.drawable.baseline_favorite_border);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     private void setVariable() {
@@ -318,10 +345,32 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
             }
         });
 
+        binding.btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playPreviousSong();
+            }
+        });
+
         binding.btnComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 clickOpenBottomSheetFragment();
+            }
+        });
+
+        binding.btnAddFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mAuth.getUid() == null) {
+                    Toast.makeText(ListeningActivity.this, "Bạn chưa đăng nhập", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (isInMyFavorite) {
+                        MyApplication.removeFromFavorite(ListeningActivity.this, object.getId());
+                    } else {
+                        MyApplication.addToFavorite(ListeningActivity.this, object.getId());
+                    }
+                }
             }
         });
     }
@@ -469,12 +518,13 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                     if (songIndex <= songCount) {
                         if (isShuffling && !isRepeat) {
                             songIndex = getRandom(songCount);
+                            Log.d(TAG, "songIndex (getRandom): " + songIndex);
                             changeSong(songIndex);
                         } else if (!isShuffling && isRepeat) {
                             songIndex = ((songIndex) % songCount);
                             Log.d(TAG, "isShuffling: " + isShuffling);
                             Log.d(TAG, "isRepeat: " + isRepeat);
-                            Log.d(TAG, "songIndex: " + songIndex);
+                            Log.d(TAG, "songIndex (isRepeat): " + songIndex);
                             changeSong(songIndex);
                         } else { // Nếu có if else thì trường else cuối phải có
                             int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
@@ -487,6 +537,24 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
                         songIndex = 1;
                         changeSong(songIndex);
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void playPreviousSong() {
+        DatabaseReference ref = database.getReference("Songs");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    songCount = (int) snapshot.getChildrenCount();
+
                 }
             }
 
