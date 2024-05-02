@@ -103,12 +103,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     case 2:
                         mCurrentPage = FRAGMENT_FAVORITE;
                         binding.navigationView.getMenu().findItem(R.id.navigation_favorite).setChecked(true);
-                        binding.bottomNavigation.getMenu().findItem(R.id.nav_library).setChecked(true);
+                        binding.bottomNavigation.getMenu().findItem(R.id.nav_favorite).setChecked(true);
                         break;
                     case 3:
                         mCurrentPage = FRAGMENT_CHAT;
                         binding.navigationView.getMenu().findItem(R.id.navigation_chat).setChecked(true);
-                        binding.bottomNavigation.getMenu().findItem(R.id.nav_favorite).setChecked(true);
+                        binding.bottomNavigation.getMenu().findItem(R.id.nav_library).setChecked(true);
                         break;
                     case 4:
                         mCurrentPage = FRAGMENT_ACCOUNT;
@@ -128,9 +128,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 binding.viewPager2.setCurrentItem(0);
             } else if (id == R.id.nav_discover) {
                 binding.viewPager2.setCurrentItem(1);
-            } else if (id == R.id.nav_library) {
-                binding.viewPager2.setCurrentItem(2);
             } else if (id == R.id.nav_favorite) {
+                binding.viewPager2.setCurrentItem(2);
+            } else if (id == R.id.nav_library) {
                 binding.viewPager2.setCurrentItem(3);
             } else if (id == R.id.nav_persion) {
                 binding.viewPager2.setCurrentItem(4);
