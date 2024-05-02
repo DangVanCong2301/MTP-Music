@@ -109,7 +109,7 @@ public class ListeningActivity extends BaseActivity implements SensorEventListen
     }
 
     private void handleFavouriteBtn() {
-        binding.btnFavourite.setOnClickListener((view)->{
+        binding.btnFavourite.setOnClickListener((view) -> {
             database.getReference()
                     .child("FavouriteSong")
                     .child(Objects.requireNonNull(mAuth.getUid()))
