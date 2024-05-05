@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="6dp"
+    android:layout_marginBottom="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_student_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2010A01"/>
+
+        <TextView
+            android:id="@+id/tv_student_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Công đặng"/>
+
+        <TextView
+            android:id="@+id/tv_student_birth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="23/01/2002"/>
+
+        <TextView
+            android:id="@+id/tv_student_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="dangvancong@gmail.com"/>
+
+        <TextView
+            android:id="@+id/tv_student_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hà Nội"/>
+
+        <TextView
+            android:id="@+id/tv_average"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7.5"/>
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
