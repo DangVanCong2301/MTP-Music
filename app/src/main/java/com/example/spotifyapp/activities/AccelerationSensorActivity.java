@@ -2,8 +2,10 @@ package com.example.spotifyapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.spotifyapp.R;
+import com.example.spotifyapp.adapters.admin.ViewPageListenAdapter;
 import com.example.spotifyapp.databinding.ActivityAccelerationSensorBinding;
 import com.example.spotifyapp.models.Song;
 import com.google.firebase.database.DataSnapshot;
@@ -54,6 +57,11 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
     private int songIndex = 1;
     private String audioUrl;
     private boolean isDirty = false;
+    private String sendObjectUrl;
+
+    public String getSendObjectUrl() {
+        return sendObjectUrl;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,35 +70,23 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
         setContentView(binding.getRoot());
 
         getIntentExtra();
-        setVariable();
-        startMusic();
-        startAnimation();
-        initListener();
+        initViewPager2();
+        initListenerBtn();
         initSensor();
 
     }
 
     private void getIntentExtra() {
         object = (Song) getIntent().getSerializableExtra("object");
-        Log.d(TAG, "object: " + object.getUrl());
+        Log.d("cong", "send_data_to_fragment: " + object.getUrl());
+        sendObjectUrl = object.getUrl();
     }
 
-    private void setVariable() {
-        binding.sbSong.setMax(100);
-
-        Glide.with(AccelerationSensorActivity.this)
-                .load(object.getImageUrl())
-                .into(binding.imgSong);
-
-        binding.tvSongName.setText(object.getSongName());
-        binding.tvSongArtist.setText(object.getSongArtist());
-
-        // Khởi tạo MediaPlayer
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        // chuẩn bị
-        prepareMediaPlayer();
+    private void initViewPager2() {
+        ViewPageListenAdapter adapter = new ViewPageListenAdapter(this);
+        binding.viewPageListen.setAdapter(adapter);
+        binding.citListen.setViewPager(binding.viewPageListen);
+        binding.viewPageListen.setCurrentItem(1);
     }
 
     private void prepareMediaPlayer() {
@@ -139,28 +135,7 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
         }
     }
 
-    private void startMusic() {
-        mediaPlayer.start();
-        updateSeekbar();
-    }
-
-    private void startAnimation() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                binding.imgSong.animate().rotationBy(360).withEndAction(this).setDuration(10000) // Sử dụng rotationBy nhé, ko phải rotation (nó sẽ quay 2 vòng thôi :))
-                        .setInterpolator(new LinearInterpolator()).start();
-            }
-        };
-        binding.imgSong.animate().rotationBy(360).withEndAction(runnable).setDuration(10000)
-                .setInterpolator(new LinearInterpolator()).start();
-    }
-
-    private void stopAnimation() {
-        binding.imgSong.animate().cancel();
-    }
-
-    private void initListener() {
+    private void initListenerBtn() {
         binding.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,31 +145,9 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
                 finish();
             }
         });
+    }
 
-        binding.btnSensor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSensorAttackMenu();
-            }
-        });
-
-        binding.btnPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    handler.removeCallbacks(updater);
-                    mediaPlayer.pause();
-                    binding.btnPlayPause.setImageResource(R.drawable.baseline_play_circle_outline);
-                    stopAnimation();
-                } else {
-                    mediaPlayer.start();
-                    binding.btnPlayPause.setImageResource(R.drawable.baseline_pause_circle_outline);
-                    updateSeekbar();
-                    startAnimation();
-                }
-            }
-        });
-
+    private void initListener() {
         binding.sbSong.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -221,13 +174,6 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
                 binding.tvCurrentTime.setText(R.string.zero);
                 mediaPlayer.reset();
                 prepareMediaPlayer();
-            }
-        });
-
-        binding.btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playNextSong();
             }
         });
     }
@@ -284,7 +230,6 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                     Toast.makeText(this, "Đang thực hiện cảm biến gia tốc", Toast.LENGTH_SHORT).show();
-                    playNextSong();
                 } else {
                     vibrator.vibrate(500);
                 }
@@ -301,110 +246,7 @@ public class AccelerationSensorActivity extends BaseActivity implements SensorEv
 
     }
 
-    private void showSensorAttackMenu() {
-        // Khởi tạo/đặt popup enu
-        PopupMenu popupMenu = new PopupMenu(this, binding.btnSensor);
-        popupMenu.getMenu().add(Menu.NONE, 0, 0, "Cảm biến dừng");
-        popupMenu.getMenu().add(Menu.NONE, 1, 1, "Cảm biến chuyển bài");
 
-        popupMenu.show();
-
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                int which = menuItem.getItemId();
-                if (which == 0) {
-                    // Cảm biến dừng/chạy bài hát
-                } else if (which == 1) {
-                    // Cảm biến chuyển bài hát
-                }
-                return false;
-            }
-        });
-    }
-
-    private void playNextSong() {
-        DatabaseReference ref = database.getReference("Songs");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                songCount = (int) snapshot.getChildrenCount();
-                Log.d(TAG, "onDataChange: " + songCount);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        if (songIndex < songCount - 1) {
-            int nextSongIndex = songIndex + 1; // Tăng chỉ số để lấy bài hát tiếp theo
-            songIndex = nextSongIndex;
-            changeSong(nextSongIndex);
-        }
-    }
-
-    private void changeSong(int next) {
-        // Dừng bài hát hiện tại nếu đang chạy
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-            }
-            mediaPlayer.release(); // Giải phóng tài nguyên
-            mediaPlayer = null;
-        }
-
-        // Khởi tạo Media Player
-        mediaPlayer = new MediaPlayer();
-
-        DatabaseReference ref = database.getReference("Songs");
-        Query query = ref.orderByChild("index").equalTo(next);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Lấy kết quả truy vấn
-                if (snapshot.exists()) {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        String songName = ds.child("songName").getValue(String.class);
-                        String songArtist = ds.child("songArtist").getValue(String.class);
-                        String imgUrl = ds.child("imageUrl").getValue(String.class);
-                        String url = ds.child("url").getValue(String.class);
-
-                        audioUrl = url;
-
-                        binding.tvSongName.setText(songName);
-                        binding.tvSongArtist.setText(songArtist);
-
-                        Glide.with(AccelerationSensorActivity.this)
-                                .load(imgUrl)
-                                .into(binding.imgSong);
-
-                        Log.d(TAG, "songName: " + songName);
-                        Log.d(TAG, "songUrl: " + url);
-
-                        try {
-                            mediaPlayer.setDataSource(url);
-                            mediaPlayer.prepare();
-                            binding.tvTotalDuration.setText(milliSecondsToTimer(mediaPlayer.getDuration()));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        Log.d(TAG, "changeSong: " + mediaPlayer.isPlaying());
-        // Tiếp tục
-        resumeMusic();
-        binding.btnPlayPause.setImageResource(R.drawable.baseline_play_circle_outline);
-        isDirty = false;
-    }
 
     private void resumeMusic() {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {

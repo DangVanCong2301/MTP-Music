@@ -11,6 +11,9 @@
     <string name="tv_account_name">Công Đặng</string>
     <string name="tv_email">dangvancong2301@gmail.com</string>
 
+    <string name="tv_song_name">Back To December</string>
+    <string name="tv_song_artist">Back To December</string>
+
     <string name="nav_home">Thư viện</string>
     <string name="nav_favorite">Yêu thích</string>
     <string name="nav_discover">Khám phá</string>
