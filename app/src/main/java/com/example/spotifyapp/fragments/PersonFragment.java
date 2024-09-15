@@ -52,6 +52,7 @@ public class PersonFragment extends Fragment {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser == null) {
             binding.tvEmail.setText("Không tài khoản");
+            startActivity(new Intent(getActivity(), IntroduceActivity.class));
         } else {
             String email = firebaseUser.getEmail();
             binding.tvEmail.setText(email);
